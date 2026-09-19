@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DATA-16: Báo Cáo Thuyết Trình Mentor - AI Agent Tự Sinh Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #0b0f19;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1f2937;
+      --border-subtle: #374151;
+      --border-accent: rgba(59, 130, 246, 0.4);
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: #60a5fa;
+      --primary-bg: rgba(59, 130, 246, 0.1);
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --text-main: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 24px rgba(59, 130, 246, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      line-height: 1.6;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Sticky Navigation Bar */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .nav-brand .badge-tag {
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 28px 20px 80px 20px;
+    }
+
+    /* Hero / Header Section */
+    .hero-section {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(17, 24, 39, 0.9));
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, #60a5fa, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .hero-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      background: rgba(11, 15, 25, 0.6);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Key Numbers Grid */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .metric-card.m-blue::before { background: var(--primary); }
+    .metric-card.m-emerald::before { background: var(--accent-emerald); }
+    .metric-card.m-cyan::before { background: var(--accent-cyan); }
+    .metric-card.m-purple::before { background: var(--accent-purple); }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      font-family: var(--font-code);
+    }
+
+    .m-blue .metric-value { color: var(--primary-light); }
+    .m-emerald .metric-value { color: var(--accent-emerald); }
+    .m-cyan .metric-value { color: var(--accent-cyan); }
+    .m-purple .metric-value { color: var(--accent-purple); }
+
+    .metric-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Section Styling */
+    .section-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .section-num {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      color: #ffffff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-left: auto;
+      font-weight: 500;
+    }
+
+    /* 2 Columns Grid */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .grid-4col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Card Inside Section */
+    .inner-box {
+      background: rgba(31, 41, 55, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+
+    .inner-box-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .box-danger {
+      border-color: rgba(244, 63, 94, 0.3);
+      background: rgba(244, 63, 94, 0.05);
+    }
+    .box-danger .inner-box-header { color: #fb7185; }
+
+    .box-success {
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    .box-success .inner-box-header { color: #34d399; }
+
+    .box-primary {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: rgba(59, 130, 246, 0.05);
+    }
+    .box-primary .inner-box-header { color: #60a5fa; }
+
+    .list-checks, .list-crosses {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list-checks li, .list-crosses li {
+      position: relative;
+      padding-left: 24px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .list-crosses li::before {
+      content: '✕';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent-rose);
+      font-weight: bold;
+    }
+
+    .list-checks li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent-emerald);
+      font-weight: bold;
+    }
+
+    .list-checks li strong, .list-crosses li strong {
+      color: var(--text-main);
+    }
+
+    /* Comparison Table */
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 14px;
+    }
+
+    .comp-table th {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .comp-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .comp-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .comp-table td.col-target {
+      color: #34d399;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.04);
+    }
+
+    .comp-table td.col-old {
+      color: #fca5a5;
+    }
+
+    /* Architecture Layers */
+    .arch-card {
+      background: rgba(31, 41, 55, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .arch-layer-badge {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .arch-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .arch-tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tech-pill {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      font-size: 11px;
+      font-family: var(--font-code);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .arch-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Workflow Diagram Pipeline */
+    .workflow-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      position: relative;
+      margin: 16px 0;
+    }
+
+    .flow-step {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .flow-step-num {
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .flow-step-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .flow-step-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .flow-step-tag {
+      font-size: 11px;
+      font-family: var(--font-code);
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    /* Roadmap Timeline */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .roadmap-item {
+      background: rgba(31, 41, 55, 0.5);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .roadmap-week {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+    }
+
+    .roadmap-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .roadmap-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Mentor Discussion Block */
+    .mentor-questions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .mentor-card {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.2), rgba(17, 24, 39, 0.8));
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: all 0.2s;
+    }
+
+    .mentor-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.15);
+    }
+
+    .mentor-q-num {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .mentor-q-content {
+      flex: 1;
+    }
+
+    .mentor-q-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .mentor-q-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Interactive Notes Box for Live Meeting */
+    .notes-box {
+      margin-top: 24px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+    }
+
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .notes-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-amber);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notes-textarea {
+      width: 100%;
+      height: 90px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 13px;
+      padding: 10px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .notes-textarea:focus {
+      border-color: var(--primary);
+    }
+
+    /* Footer */
+    .page-footer {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 40px;
+    }
+
+    /* Print View Optimization */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+      .top-nav, .btn-action, .notes-box {
+        display: none !important;
+      }
+      .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .hero-section, .section-card, .metric-card, .inner-box, .arch-card, .flow-step, .roadmap-item, .mentor-card {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #cccccc !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+      }
+      .hero-title, .section-title, .arch-title, .flow-step-title, .mentor-q-title {
+        color: #000000 !important;
+      }
+      .hero-title span {
+        -webkit-text-fill-color: #000000 !important;
+        color: #000000 !important;
+      }
+      .text-secondary, .text-muted, .arch-desc, .flow-step-desc, .mentor-q-desc {
+        color: #333333 !important;
+      }
+      .metric-value {
+        color: #000000 !important;
+      }
+      .comp-table th {
+        background: #f1f5f9 !important;
+        color: #000000 !important;
+      }
+      .comp-table td {
+        color: #000000 !important;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 960px) {
+      .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+      .grid-2col { grid-template-columns: 1fr; }
+      .grid-4col { grid-template-columns: 1fr 1fr; }
+      .workflow-strip { grid-template-columns: 1fr; }
+      .roadmap-grid { grid-template-columns: repeat(3, 1fr); }
+      .top-nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Quick Navigation -->
+  <nav class="top-nav">
+    <a href="#top" class="nav-brand">
+      <span class="badge-tag">DATA-16</span>
+      <span>Báo Cáo Mentor</span>
+    </a>
+    <div class="nav-links">
+      <a href="#boi-canh" class="nav-link">1. Bối Cảnh</a>
+      <a href="#muc-tieu" class="nav-link">2. Mục Tiêu & KPI</a>
+      <a href="#semantic-layer" class="nav-link">3. Semantic Layer</a>
+      <a href="#kien-truc" class="nav-link">4. Kiến Trúc 4 Tầng</a>
+      <a href="#multi-agent" class="nav-link">5. Quy Trình Agent</a>
+      <a href="#governance" class="nav-link">6. Data-to-Viz & RLS</a>
+      <a href="#lo-trinh" class="nav-link">7. Lộ Trình</a>
+      <a href="#xin-y-kien" class="nav-link">8. Xin Ý Kiến Mentor</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-action" onclick="window.print()" title="In hoặc lưu file PDF để nộp / chia sẻ">
+        🖨️ In / Xuất PDF
+      </button>
+    </div>
+  </nav>
+
+  <div class="container" id="top">
+
+    <!-- HERO / TITLE BANNER -->
+    <header class="hero-section">
+      <div class="hero-meta-badges">
+        <span class="badge badge-blue">Đề Tài Nghiên Cứu & Phát Triển</span>
+        <span class="badge badge-cyan">Khối Dữ Liệu Tập Trung (VSF) - Vinhomes</span>
+        <span class="badge badge-emerald">Autonomous Agentic Architecture</span>
+        <span class="badge badge-amber">Báo Cáo Hội Đồng / Mentor</span>
+      </div>
+
+      <h1 class="hero-title">
+        DATA-16: AI Agent Tự Sinh Dashboard<br>
+        <span>Từ Yêu Cầu Ngôn Ngữ Tự Nhiên</span>
+      </h1>
+      <p class="hero-subtitle">
+        Natural Language to Interactive Dashboard AI Agent — Tối ưu hóa chu kỳ trích xuất insight kinh doanh bất động sản từ nhiều ngày xuống dưới 60 giây.
+      </p>
+
+      <div class="hero-info-grid">
+        <div class="info-item">
+          <span class="info-label">Đơn Vị Nghiên Cứu</span>
+          <span class="info-value">Khối VSF - Vinhomes / Vingroup</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Người Báo Cáo</span>
+          <span class="info-value">Học viên / Kỹ sư dự án</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Mentor Hướng Dẫn</span>
+          <span class="info-value">Hội đồng Cố vấn & Trưởng khối</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Trọng Tâm Buổi Báo Cáo</span>
+          <span class="info-value">Bảo vệ Kiến trúc & Xin ý kiến chỉ đạo</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KEY NUMBERS METRICS BAR -->
+    <div class="metrics-bar">
+      <div class="metric-card m-blue">
+        <div class="metric-value">&lt; 60s</div>
+        <div class="metric-label">Thời Gian Tạo Dashboard</div>
+        <div class="metric-sub">Giảm 99% so với 3-5 ngày truyền thống</div>
+      </div>
+      <div class="metric-card m-emerald">
+        <div class="metric-value">100%</div>
+        <div class="metric-label">Độ Chính Xác Số Liệu</div>
+        <div class="metric-sub">Kiểm soát qua Cube.dev Semantic Layer</div>
+      </div>
+      <div class="metric-card m-cyan">
+        <div class="metric-value">&gt; 95%</div>
+        <div class="metric-label">Tỷ Lệ Query Hợp Lệ Lần Đầu</div>
+        <div class="metric-sub">Nhờ JSON Schema ràng buộc chặt chẽ</div>
+      </div>
+      <div class="metric-card m-purple">
+        <div class="metric-value">&gt; 90%</div>
+        <div class="metric-label">Chart Suitability Score (CSS)</div>
+        <div class="metric-sub">Chuẩn Data-to-Viz trực quan hóa</div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: BỐI CẢNH & NỖI ĐAU THỰC TẾ -->
+    <section class="section-card" id="boi-canh">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <h2 class="section-title">Bối Cảnh & Điểm Nghẽn Doanh Nghiệp (Pain Points)</h2>
+        <span class="section-subtitle">Thực trạng vận hành BI tại doanh nghiệp BĐS quy mô lớn</span>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Bottleneck BI truyền thống -->
+        <div class="inner-box box-danger">
+          <div class="inner-box-header">
+            <span>⚠️ Nút Thắt Cổ Chai Của Quy Trình BI Truyền Thống</span>
+          </div>
+          <ul class="list-crosses">
+            <li><strong>Lead Time kéo dài (3 - 5 ngày):</strong> Lãnh đạo cần số liệu mở bán gấp (Grand Park, Smart City) nhưng phải qua nhiều tầng BA, Data Engineer, BI Developer.</li>
+            <li><strong>BI Team quá tải 70%:</strong> Tốn phần lớn tài nguyên cho các yêu cầu báo cáo ad-hoc lặp đi lặp lại thay vì phân tích giá trị cao.</li>
+            <li><strong>Rào cản người dùng nghiệp vụ:</strong> Quản lý vùng và chuyên viên kinh doanh không thể tự kéo thả DAX, SQL hay tinh chỉnh trục biểu đồ phức tạp.</li>
+          </ul>
+        </div>
+
+        <!-- Rủi ro GenAI thông thường -->
+        <div class="inner-box box-danger">
+          <div class="inner-box-header">
+            <span>❌ Rủi Ro Khi Dùng Generative AI / Text-to-SQL Tự Do</span>
+          </div>
+          <ul class="list-crosses">
+            <li><strong>Ảo giác số liệu (Hallucination):</strong> LLM sinh SQL thô dễ tính sai logic tài chính (cộng gộp hợp đồng đã hủy cọc, nhầm doanh thu kế toán và giá trị HĐMB).</li>
+            <li><strong>Nguy cơ rò rỉ dữ liệu (No Governance):</strong> Thiếu cơ chế phân quyền cấp dòng (Row-Level Security) theo chi nhánh, vi phạm bảo mật dữ liệu.</li>
+            <li><strong>FinOps & Chi phí BigQuery:</strong> Truy vấn SQL thô không qua tối ưu quét hàng Terabytes trên BigQuery mỗi lần prompt.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: MỤC TIÊU DỰ ÁN & BẢNG SO SÁNH -->
+    <section class="section-card" id="muc-tieu">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <h2 class="section-title">Mục Tiêu Đề Tài & Giá Trị Đột Phá</h2>
+        <span class="section-subtitle">Chuyển dịch từ BI phản ứng sang Conversational BI chủ động</span>
+      </div>
+
+      <p style="color: var(--text-secondary); margin-bottom: 16px;">
+        Xây dựng hệ thống <strong>AI Agent đàm thoại thông minh</strong>, cho phép lãnh đạo và chuyên viên nghiệp vụ nhập yêu cầu bằng tiếng Việt tự nhiên để nhận lại Dashboard tương tác đầy đủ widget, biểu đồ tối ưu và phân tích nhận định kinh doanh trong vòng chưa đầy 1 phút.
+      </p>
+
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Tiêu Chí Đánh Giá</th>
+            <th style="width: 35%;">BI Truyền Thống (Looker / Power BI)</th>
+            <th style="width: 40%;">Hệ Thống AI Agent DATA-16</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Thời gian phản hồi</strong></td>
+            <td class="col-old">3 - 5 ngày làm việc / ticket</td>
+            <td class="col-target">⚡ Dưới 60 giây (tự động hóa 100%)</td>
+          </tr>
+          <tr>
+            <td><strong>Độ chính xác dữ liệu</strong></td>
+            <td class="col-old">Phụ thuộc kỹ năng manual review của cá nhân</td>
+            <td class="col-target">🎯 100% (Single Source of Truth qua Semantic Layer)</td>
+          </tr>
+          <tr>
+            <td><strong>Phương thức tương tác</strong></td>
+            <td class="col-old">Kéo thả field, viết hàm DAX/LookML phức tạp</td>
+            <td class="col-target">💬 Prompt tiếng Việt tự nhiên + Human-in-the-Loop duyệt</td>
+          </tr>
+          <tr>
+            <td><strong>Bảo mật & Phân quyền</strong></td>
+            <td class="col-old">Cấu hình thủ công từng workspace, dễ sai sót</td>
+            <td class="col-target">🛡️ Tự động áp dụng RLS / RBAC theo User Context Token</td>
+          </tr>
+          <tr>
+            <td><strong>Khả năng tinh chỉnh</strong></td>
+            <td class="col-old">Lặp lại quy trình ticket họp phân tích lại</td>
+            <td class="col-target">🔄 Hội thoại đa vòng (Multi-turn chat: "Đổi sang bar chart", "Lọc riêng quý 3")</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 3: ĐỘT PHÁ CỐT LÕI - SEMANTIC LAYER -->
+    <section class="section-card" id="semantic-layer">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <h2 class="section-title">Điểm Đột Phá: Tại Sao Dùng Semantic Layer (Cube.dev)?</h2>
+        <span class="section-subtitle">Giải quyết triệt để bài toán Hallucination của Text-to-SQL</span>
+      </div>
+
+      <div class="grid-3col">
+        <div class="inner-box box-primary">
+          <div class="inner-box-header">🔒 LLM Không Viết SQL Thô</div>
+          <p style="font-size: 13px; color: var(--text-secondary);">
+            Agent chỉ sinh ra <strong>Semantic Query JSON</strong> chuẩn xác (gồm <code style="color:#60a5fa">measures</code>, <code style="color:#60a5fa">dimensions</code>, <code style="color:#60a5fa">filters</code>). Không cho LLM tự bịa cú pháp SQL hay đoán tên bảng trong kho.
+          </p>
+        </div>
+
+        <div class="inner-box box-success">
+          <div class="inner-box-header">📊 Định Nghĩa Metric Chuẩn Hóa</div>
+          <p style="font-size: 13px; color: var(--text-secondary);">
+            Công thức tính "Doanh số thực tế", "Tỷ lệ cọc", "Chiết khấu mở bán" được khai báo một lần duy nhất trong Cube Data Model. Đảm bảo toàn bộ doanh nghiệp chung một nguồn dữ liệu thật.
+          </p>
+        </div>
+
+        <div class="inner-box box-primary">
+          <div class="inner-box-header">⚡ FinOps & Tăng Tốc Cache</div>
+          <p style="font-size: 13px; color: var(--text-secondary);">
+            Tận dụng cơ chế <strong>Pre-aggregation (Rollup Tables)</strong> của Cube.dev. Giảm đến <strong>80% chi phí scan</strong> BigQuery và tăng tốc độ tải dữ liệu dashboard xuống <strong>&lt; 1.5 giây</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: KIẾN TRÚC KỸ THUẬT 4 TẦNG -->
+    <section class="section-card" id="kien-truc">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <h2 class="section-title">Tổng Quan Kiến Trúc Kỹ Thuật (4 Tầng)</h2>
+        <span class="section-subtitle">Thiết kế phân tầng hiện đại, module hóa và sẵn sàng mở rộng</span>
+      </div>
+
+      <div class="grid-4col">
+        <!-- Layer 1 -->
+        <div class="arch-card">
+          <span class="arch-layer-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">Tầng 1: Trực Quan</span>
+          <h3 class="arch-title">Presentation Layer</h3>
+          <div class="arch-tech-stack">
+            <span class="tech-pill">Next.js 14</span>
+            <span class="tech-pill">Apache ECharts</span>
+            <span class="tech-pill">React Grid</span>
+            <span class="tech-pill">SSE Stream</span>
+          </div>
+          <p class="arch-desc">
+            Hỗ trợ 2 chế độ <strong>Viewer</strong> (Lãnh đạo xem drill-down, filter) và <strong>Builder</strong> (Prompt sinh widget, kéo thả layout). Tương tác thời gian thực qua Server-Sent Events.
+          </p>
+        </div>
+
+        <!-- Layer 2 -->
+        <div class="arch-card">
+          <span class="arch-layer-badge" style="background: rgba(139, 92, 246, 0.2); color: #a78bfa;">Tầng 2: Điều Phối AI</span>
+          <h3 class="arch-title">LangGraph Orchestration</h3>
+          <div class="arch-tech-stack">
+            <span class="tech-pill">LangGraph</span>
+            <span class="tech-pill">FastAPI</span>
+            <span class="tech-pill">Self-Correction</span>
+            <span class="tech-pill">HITL Breakpoint</span>
+          </div>
+          <p class="arch-desc">
+            Hệ thống Multi-Agent có trạng thái (Stateful), kiểm soát ngữ cảnh hội thoại, tự động sửa lỗi truy vấn và cung cấp điểm ngắt <strong>Human-in-the-Loop</strong> phê duyệt trước khi xuất bản.
+          </p>
+        </div>
+
+        <!-- Layer 3 -->
+        <div class="arch-card">
+          <span class="arch-layer-badge" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">Tầng 3: Ngữ Nghĩa</span>
+          <h3 class="arch-title">Cube.dev Semantic Layer</h3>
+          <div class="arch-tech-stack">
+            <span class="tech-pill">Cube.dev</span>
+            <span class="tech-pill">REST / SQL API</span>
+            <span class="tech-pill">Pre-Aggregation</span>
+            <span class="tech-pill">Row-Level RLS</span>
+          </div>
+          <p class="arch-desc">
+            Quản trị định nghĩa chỉ số tập trung, biên dịch Semantic JSON sang SQL tối ưu, thực thi phân quyền cấp dòng theo vùng miền và duy trì lớp bộ nhớ đệm tốc độ cao.
+          </p>
+        </div>
+
+        <!-- Layer 4 -->
+        <div class="arch-card">
+          <span class="arch-layer-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Tầng 4: Kho Dữ Liệu</span>
+          <h3 class="arch-title">Enterprise Warehouse</h3>
+          <div class="arch-tech-stack">
+            <span class="tech-pill">Google BigQuery</span>
+            <span class="tech-pill">Redis Cache</span>
+            <span class="tech-pill">PostgreSQL Audit</span>
+          </div>
+          <p class="arch-desc">
+            Lưu trữ Fact giao dịch BĐS, Dimension dự án (phân vùng Partition & Cluster). Kết hợp Redis lưu session và PostgreSQL lưu vết kiểm toán (Audit Trail) phục vụ bảo mật.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: QUY TRÌNH MULTI-AGENT VỚI LANGGRAPH -->
+    <section class="section-card" id="multi-agent">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <h2 class="section-title">Quy Trình Multi-Agent Trong LangGraph</h2>
+        <span class="section-subtitle">Phối hợp chặt chẽ giữa 5 tác nhân chuyên biệt và vòng lặp tự sửa lỗi</span>
+      </div>
+
+      <div class="workflow-strip">
+        <!-- Step 1 -->
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-title">Intent & Disambiguation Agent</div>
+          <span class="flow-step-tag">Trích Xuất Ý Định</span>
+          <div class="flow-step-desc">
+            Phân tích prompt tiếng Việt. Nếu yêu cầu còn mơ hồ (ví dụ: "Doanh số tốt không?"), chủ động đặt câu hỏi gợi ý để làm rõ ý định trước khi xử lý.
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-title">Cube Builder Agent</div>
+          <span class="flow-step-tag">Semantic Query</span>
+          <div class="flow-step-desc">
+            Ánh xạ sang Cube Data Model, sinh JSON Query gồm measures (doanh số, căn hộ bán), dimensions (phân khu, ngày), filters. Tự sửa lỗi nếu schema không khớp.
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-title">Chart Advisor Agent</div>
+          <span class="flow-step-tag">Data-to-Viz Rules</span>
+          <div class="flow-step-desc">
+            Dựa trên bản chất dữ liệu (chuỗi thời gian, so sánh tỷ trọng, tương quan) để chọn loại chart ECharts tối ưu nhất và tính điểm CSS (Chart Suitability).
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-title">Narrative Insight Agent</div>
+          <span class="flow-step-tag">Executive Summary</span>
+          <div class="flow-step-desc">
+            Tự động viết 2-3 gạch đầu dòng phân tích nhận định kinh doanh (điểm sáng tăng trưởng, phân khu chậm tiến độ) hiển thị trực tiếp cạnh biểu đồ.
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="flow-step" style="border-color: var(--accent-emerald);">
+          <div class="flow-step-num" style="background: var(--accent-emerald);">5</div>
+          <div class="flow-step-title">Human-in-the-Loop (HITL)</div>
+          <span class="flow-step-tag" style="color: #34d399; background: rgba(16, 185, 129, 0.1);">Kiểm Duyệt & Lưu</span>
+          <div class="flow-step-desc">
+            Hiển thị bản nháp Preview cho người dùng Builder. Người dùng có thể chấp thuận lưu, yêu cầu chỉnh sửa tiếp bằng chat, hoặc đổi loại biểu đồ thủ công.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: QUẢN TRỊ DỮ LIỆU & TIÊU CHUẨN BIỂU ĐỒ -->
+    <section class="section-card" id="governance">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <h2 class="section-title">Quản Trị Dữ Liệu (Governance) & Chuẩn Hóa Data-to-Viz</h2>
+        <span class="section-subtitle">Đảm bảo an toàn thông tin doanh nghiệp và chất lượng trực quan</span>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Governance Card -->
+        <div class="inner-box box-success">
+          <div class="inner-box-header">
+            <span>🛡️ Bảo Mật Dữ Liệu Doanh Nghiệp (Governance & Security)</span>
+          </div>
+          <ul class="list-checks">
+            <li><strong>Phân quyền cấp dòng (Row-Level Security - RLS):</strong> Giám đốc Vùng 1 chỉ truy cập được dữ liệu dự án Vùng 1. User Context được inject tự động vào mọi Cube Query.</li>
+            <li><strong>Ngăn ngừa triệt để Prompt Injection:</strong> LLM hoàn toàn bị cô lập khỏi Database, chỉ tương tác thông qua JSON Schema trung gian có kiểm duyệt nghiêm ngặt.</li>
+            <li><strong>Nhật ký kiểm toán đầy đủ (Audit Trail):</strong> Lưu trữ 100% lịch sử truy vấn, prompt, người phê duyệt trên PostgreSQL phục vụ kiểm toán nội bộ tập đoàn.</li>
+          </ul>
+        </div>
+
+        <!-- Data-to-Viz Card -->
+        <div class="inner-box box-primary">
+          <div class="inner-box-header">
+            <span>📐 Tiêu Chuẩn Gợi Ý Biểu Đồ (Data-to-Viz Rules)</span>
+          </div>
+          <ul class="list-checks">
+            <li><strong>Có chiều thời gian (Date/Month):</strong> Ưu tiên <strong>Line Chart / Area Chart</strong> thể hiện xu hướng tiến độ bán hàng.</li>
+            <li><strong>So sánh cơ cấu danh mục:</strong> &le; 5 phân khu dùng <strong>Donut Chart</strong>; &gt; 5 phân khu tự chuyển thành <strong>Horizontal Bar Chart</strong>.</li>
+            <li><strong>Tương quan 2 chỉ số:</strong> So sánh Doanh số vs Chiết khấu dùng <strong>Scatter Plot / Bubble Chart</strong>.</li>
+            <li><strong>Thước đo CSS (Chart Suitability Score):</strong> Chấm điểm tự động tính trực quan (0 - 100), cam kết đạt <strong>CSS &gt; 90%</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: LỘ TRÌNH TRIỂN KHAI DỰ ÁN 12 TUẦN -->
+    <section class="section-card" id="lo-trinh">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <h2 class="section-title">Lộ Trình Triển Khai Chi Tiết (12 Tuần)</h2>
+        <span class="section-subtitle">Kế hoạch triển khai từng bước chặt chẽ, rõ ràng sản phẩm bàn giao</span>
+      </div>
+
+      <div class="roadmap-grid">
+        <div class="roadmap-item">
+          <span class="roadmap-week">Tuần 1 - 2</span>
+          <h4 class="roadmap-title">Chuẩn Bị & Nền Tảng</h4>
+          <p class="roadmap-desc">Thiết kế Cube Schema, kết nối BigQuery, chuẩn hóa từ điển kinh doanh BĐS.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="roadmap-week">Tuần 3 - 5</span>
+          <h4 class="roadmap-title">Xây Dựng AI Core</h4>
+          <p class="roadmap-desc">Phát triển LangGraph StateGraph, Intent Agent & Cube Query Builder Agent.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="roadmap-week">Tuần 6 - 7</span>
+          <h4 class="roadmap-title">Visualization Engine</h4>
+          <p class="roadmap-desc">Xây dựng Chart Advisor, tích hợp bộ visualizer ECharts & SSE streaming.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="roadmap-week">Tuần 8 - 9</span>
+          <h4 class="roadmap-title">HITL & Giao Diện UX</h4>
+          <p class="roadmap-desc">Hoàn thiện giao diện Next.js, cơ chế Preview nháp, kéo thả layout và nút Duyệt.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="roadmap-week">Tuần 10 - 11</span>
+          <h4 class="roadmap-title">Thử Nghiệm & Đánh Giá</h4>
+          <p class="roadmap-desc">Chạy Benchmark 100 câu hỏi nghiệp vụ thực tế, đo CSS & độ chính xác truy vấn.</p>
+        </div>
+
+        <div class="roadmap-item">
+          <span class="roadmap-week">Tuần 12</span>
+          <h4 class="roadmap-title">Đóng Gói & Chuyển Giao</h4>
+          <p class="roadmap-desc">Bàn giao tài liệu kỹ thuật, demo hội đồng và chuyển giao cho Khối VSF vận hành.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: XIN Ý KIẾN CHỈ ĐẠO CỦA MENTOR -->
+    <section class="section-card" id="xin-y-kien" style="border-color: rgba(59, 130, 246, 0.5);">
+      <div class="section-header">
+        <div class="section-num" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">8</div>
+        <h2 class="section-title">Các Nội Dung Trọng Tâm Xin Ý Kiến Chỉ Đạo Của Mentor</h2>
+        <span class="section-subtitle">Thảo luận trực tiếp trong buổi gặp</span>
+      </div>
+
+      <div class="mentor-questions-container">
+        <!-- Question 1 -->
+        <div class="mentor-card">
+          <div class="mentor-q-num">1</div>
+          <div class="mentor-q-content">
+            <h3 class="mentor-q-title">Chiến Lược Tối Ưu Hóa Bộ Nhớ Đệm & Pre-Aggregation Của Cube.dev</h3>
+            <p class="mentor-q-desc">
+              Khi dữ liệu giao dịch bán hàng trên BigQuery được đồng bộ và cập nhật theo mốc định kỳ (hoặc streaming trong các đợt mở bán lớn), việc cấu hình <strong>Cache Warming</strong> và làm tươi <strong>Rollup Pre-aggregations</strong> trên Cube.dev nên được thiết kế như thế nào để cân bằng giữa độ tươi của số liệu (freshness) và chi phí tài nguyên máy chủ?
+            </p>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="mentor-card">
+          <div class="mentor-q-num">2</div>
+          <div class="mentor-q-content">
+            <h3 class="mentor-q-title">Mức Độ Tương Tác Của Cơ Chế Human-in-the-Loop (HITL)</h3>
+            <p class="mentor-q-desc">
+              Khâu xem trước bản nháp (Preview Modal) hiện tại cho phép người dùng bấm "Lưu", "Chỉnh sửa qua prompt" hoặc "Đổi biểu đồ thủ công". Mentor đánh giá mức độ can thiệp này đã đủ tinh gọn cho đối tượng Lãnh đạo cấp cao chưa, hay cần bổ sung thêm tính năng AI chủ động <strong>đề xuất 3 câu hỏi đào sâu tiếp theo (Follow-up prompts)</strong>?
+            </p>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="mentor-card">
+          <div class="mentor-q-num">3</div>
+          <div class="mentor-q-content">
+            <h3 class="mentor-q-title">Định Hướng Xây Dựng Bộ Test Benchmark 100 Kịch Bản Nghiệp Vụ</h3>
+            <p class="mentor-q-desc">
+              Để đánh giá nghiệm thu hệ thống với hội đồng, em dự kiến xây dựng tập 100 câu hỏi test thực tế bám sát các kịch bản mở bán lớn của Vinhomes. Xin Mentor cho ý kiến tư vấn về tỷ lệ phân bổ giữa các câu hỏi đơn giản (1 metric), câu hỏi đa chiều (multi-dimensions) và câu hỏi suy diễn phức tạp (phát hiện bất thường dòng tiền)?
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Interactive Meeting Notes -->
+      <div class="notes-box">
+        <div class="notes-header">
+          <div class="notes-title">
+            <span>📝 Ghi Chú Ý Kiến Chỉ Đạo Trực Tiếp Từ Mentor (Tự động lưu trên trình duyệt)</span>
+          </div>
+          <button class="btn-action" onclick="saveNotes()" style="padding: 4px 10px; font-size: 12px;">💾 Lưu Ghi Chú</button>
+        </div>
+        <textarea id="mentorNotes" class="notes-textarea" placeholder="Nhập nhanh các ý kiến góp ý, dặn dò hoặc task cần chỉnh sửa từ Mentor tại đây..."></textarea>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="page-footer">
+      <p><strong>DỰ ÁN DATA-16: AI AGENT TỰ SINH DASHBOARD TỪ NGÔN NGỮ TỰ NHIÊN</strong></p>
+      <p style="margin-top: 4px;">Khối Dữ Liệu Tập Trung (VSF) - Vinhomes / Tập đoàn Vingroup • Năm 2026</p>
+      <p style="margin-top: 8px; font-size: 12px;">
+        <a href="#top" style="color: var(--primary-light); text-decoration: none;">↑ Trở về đầu trang</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Load saved notes from LocalStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedNotes = localStorage.getItem('DATA16_MENTOR_NOTES');
+      if (savedNotes) {
+        document.getElementById('mentorNotes').value = savedNotes;
+      }
+    });
+
+    // Save notes
+    function saveNotes() {
+      const text = document.getElementById('mentorNotes').value;
+      localStorage.setItem('DATA16_MENTOR_NOTES', text);
+      alert('Đã lưu ghi chú chỉ đạo của Mentor thành công!');
+    }
+
+    // Auto save notes on change
+    document.getElementById('mentorNotes').addEventListener('input', (e) => {
+      localStorage.setItem('DATA16_MENTOR_NOTES', e.target.value);
+    });
+
+    // Scroll active link highlight
+    const sections = document.querySelectorAll('section[id], header[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        if (pageYOffset >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
