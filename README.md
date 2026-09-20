@@ -12,4 +12,4 @@ Dự án nghiên cứu, thiết kế kiến trúc và triển khai kỹ thuật:
   * `DATA-16_Slide_Thuyet_Trinh_Mentor.md`: Slide thuyết trình báo cáo Mentor (chuẩn Marp / Markdown).
   * `slides.html`: Ứng dụng web trình chiếu slide tương tác trực tiếp (hỗ trợ phím tắt, ghi chú thuyết trình, toàn màn hình).
 * **`DATA19/`**: Tài liệu chuyên đề đề tài DATA-19.
-* **`cloneFromGitHub/`**: Mã nguồn template dự án P-117.
+
