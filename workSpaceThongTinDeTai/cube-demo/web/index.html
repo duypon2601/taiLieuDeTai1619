@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DATA-16 | AI Agent Tự Sinh Dashboard (Cube.dev)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AI Semantic Dashboard</h1>
+          <p class="brand-subtitle">Đề tài DATA-16 • Tự sinh biểu đồ qua Cube.dev Semantic Layer</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="status-badge" id="cubeStatusBadge">
+          <span class="pulse-dot"></span>
+          <span>Cube.dev: <strong id="cubeStatusText">Đang kiểm tra...</strong></span>
+        </div>
+        <div class="status-badge ai-badge" id="aiStatusBadge">
+          <span class="ai-dot"></span>
+          <span id="aiStatusText">AI Mode: <strong>Chưa gắn Key (Offline)</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- API Key Banner -->
+    <section class="api-key-banner">
+      <div class="api-key-row">
+        <div class="api-provider-select-wrapper">
+          <span class="key-icon">🤖</span>
+          <select id="aiProviderSelect" class="provider-select">
+            <option value="gemini">Google Gemini (Miễn phí / Khuyên dùng)</option>
+            <option value="openai">OpenAI (ChatGPT)</option>
+          </select>
+        </div>
+        <input 
+          type="password" 
+          id="quickApiKeyInput" 
+          class="api-key-input" 
+          placeholder="Dán API Key vào đây (VD: AIzaSy... hoặc sk-...) để AI thật chạy trực tiếp" 
+          autocomplete="off"
+        />
+        <button id="saveApiKeyBtn" class="btn-save-key">
+          <span>Kích hoạt AI Thật</span>
+        </button>
+      </div>
+      <div class="api-key-hint" id="apiKeyHint">
+        💡 <em>Mẹo: Bạn có thể lấy Gemini API Key miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #38bdf8;">aistudio.google.com</a>. Nếu không nhập key, hệ thống vẫn tự động chạy mô phỏng chuẩn.</em>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+      <!-- Search Box & Presets -->
+      <section class="prompt-section">
+        <div class="search-bar-wrapper">
+          <div class="search-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"></path>
+              <path d="m4.93 4.93 4.24 4.24"></path>
+              <path d="m14.83 14.83 4.24 4.24"></path>
+              <path d="M14.83 9.17l4.24-4.24"></path>
+              <path d="M4.93 19.07l4.24-4.24"></path>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            id="promptInput" 
+            class="search-input" 
+            placeholder="Nhập yêu cầu phân tích bằng tiếng Việt (VD: So sánh tổng doanh thu theo loại sản phẩm...)" 
+            autocomplete="off"
+          />
+          <button id="sendBtn" class="btn-primary">
+            <span>Phân tích</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Presets -->
+        <div class="presets-row">
+          <span class="preset-label">Gợi ý thử nhanh:</span>
+          <button class="preset-chip active" data-query="Tổng doanh thu theo từng loại sản phẩm">
+            🏢 Doanh thu theo loại BĐS
+          </button>
+          <button class="preset-chip" data-query="Tỷ trọng doanh thu theo trạng thái đơn hàng">
+            📊 Tỷ lệ trạng thái (Completed / Pending / Cancelled)
+          </button>
+          <button class="preset-chip" data-query="Xu hướng số lượng đơn hàng theo ngày">
+            📈 Xu hướng đơn hàng theo ngày
+          </button>
+          <button class="preset-chip" data-query="Giá trị giao dịch trung bình theo loại sản phẩm">
+            💎 Giá trị trung bình mỗi loại
+          </button>
+        </div>
+      </section>
+
+      <!-- Processing Pipeline Stepper -->
+      <section class="pipeline-stepper" id="pipelineStepper">
+        <div class="step-item completed" id="step1">
+          <div class="step-circle">1</div>
+          <div class="step-text">Ngôn ngữ tự nhiên</div>
+        </div>
+        <div class="step-line active"></div>
+        <div class="step-item active" id="step2">
+          <div class="step-circle">2</div>
+          <div class="step-text">AI dịch ra Cube JSON</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" id="step3">
+          <div class="step-circle">3</div>
+          <div class="step-text">Cube.dev query Database</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" id="step4">
+          <div class="step-circle">4</div>
+          <div class="step-text">Sinh Biểu đồ & Insight</div>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section class="results-section">
+        <!-- Natural Language Insight Card -->
+        <div class="insight-card" id="insightCard">
+          <div class="insight-header">
+            <div class="insight-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.7-6.3 4.7 2.3-7-6-4.6h7.6z"/>
+              </svg>
+              <span>AI Business Insight</span>
+            </div>
+            <span class="insight-time" id="insightTime">Vừa xong</span>
+          </div>
+          <div class="insight-body" id="insightContent">
+            Đang tải dữ liệu và phân tích ngữ nghĩa...
+          </div>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi-card">
+            <div class="kpi-title">Tổng Doanh Thu</div>
+            <div class="kpi-value" id="kpiTotalRevenue">---</div>
+            <div class="kpi-sub">Triệu VNĐ</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Tổng Số Giao Dịch</div>
+            <div class="kpi-value" id="kpiTotalOrders">---</div>
+            <div class="kpi-sub">Giao dịch ghi nhận</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Giá Trị Trung Bình</div>
+            <div class="kpi-value" id="kpiAvgAmount">---</div>
+            <div class="kpi-sub">Triệu VNĐ / đơn</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Nhóm Dẫn Đầu</div>
+            <div class="kpi-value highlight" id="kpiTopCategory">---</div>
+            <div class="kpi-sub" id="kpiTopCategorySub">Đóng góp cao nhất</div>
+          </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="chart-container-card">
+          <div class="chart-card-header">
+            <div>
+              <h2 class="chart-title" id="chartHeading">Biểu đồ tổng quan</h2>
+              <p class="chart-subtitle" id="chartSubheading">Dữ liệu tổng hợp từ Semantic Layer Cube.dev</p>
+            </div>
+            <div class="chart-type-pill" id="chartTypeBadge">
+              Bar Chart
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Step-by-Step Input / Output Inspector -->
+        <div class="inspector-card">
+          <div class="inspector-header" id="inspectorToggle">
+            <div class="inspector-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Trình Soi Chi Tiết: Input (Đầu vào) & Output (Đầu ra) Qua Từng Bước</span>
+            </div>
+            <span class="inspector-arrow" id="inspectorArrow">▼</span>
+          </div>
+
+          <div class="inspector-content" id="inspectorBody">
+            <p class="io-intro">Bấm vào từng bước để xem chính xác dữ liệu đầu vào (Input) và kết quả sinh ra (Output):</p>
+            
+            <div class="io-step-tabs">
+              <button class="io-tab-btn active" data-step="1">
+                <span>1. Ngôn ngữ tự nhiên</span>
+              </button>
+              <button class="io-tab-btn" data-step="2">
+                <span>2. AI Semantic Agent</span>
+              </button>
+              <button class="io-tab-btn" data-step="3">
+                <span>3. Cube.dev Engine</span>
+              </button>
+              <button class="io-tab-btn" data-step="4">
+                <span>4. Chart & KPI Render</span>
+              </button>
+              <button class="io-tab-btn" data-step="5">
+                <span>5. AI Natural Insight</span>
+              </button>
+            </div>
+
+            <!-- Tab 1 -->
+            <div class="io-panel active" id="ioPanel1">
+              <div class="io-grid">
+                <div class="io-box">
+                  <div class="io-box-label input-label">📥 INPUT (Người dùng nhập)</div>
+                  <pre class="code-block" id="ioStep1Input">// Chờ câu hỏi...</pre>
+                </div>
+                <div class="io-box">
+                  <div class="io-box-label output-label">📤 OUTPUT (Ý định trích xuất)</div>
+                  <pre class="code-block" id="ioStep1Output">// Trích xuất...</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2 -->
+            <div class="io-panel" id="ioPanel2">
+              <div class="io-grid">
+                <div class="io-box">
+                  <div class="io-box-label input-label">📥 INPUT (Gửi vào AI Agent)</div>
+                  <pre class="code-block" id="ioStep2Input">// Prompt + Schema...</pre>
+                </div>
+                <div class="io-box">
+                  <div class="io-box-label output-label">📤 OUTPUT (Cube JSON + Chart Strategy)</div>
+                  <pre class="code-block" id="ioStep2Output">// Cube Query JSON...</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3 -->
+            <div class="io-panel" id="ioPanel3">
+              <div class="io-grid">
+                <div class="io-box">
+                  <div class="io-box-label input-label">📥 INPUT (Gửi đến Cube.dev API)</div>
+                  <pre class="code-block" id="ioStep3Input">// POST http://localhost:4000/cubejs-api/v1/load...</pre>
+                </div>
+                <div class="io-box">
+                  <div class="io-box-label output-label">📤 OUTPUT (Dữ liệu tính toán từ Postgres)</div>
+                  <pre class="code-block" id="ioStep3Output">// Dữ liệu Raw từ Cube...</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 4 -->
+            <div class="io-panel" id="ioPanel4">
+              <div class="io-grid">
+                <div class="io-box">
+                  <div class="io-box-label input-label">📥 INPUT (Dữ liệu số liệu sạch)</div>
+                  <pre class="code-block" id="ioStep4Input">// Số liệu đầu vào để vẽ...</pre>
+                </div>
+                <div class="io-box">
+                  <div class="io-box-label output-label">📤 OUTPUT (Dataset vẽ Chart.js & KPIs)</div>
+                  <pre class="code-block" id="ioStep4Output">// Labels & Datasets...</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 5 -->
+            <div class="io-panel" id="ioPanel5">
+              <div class="io-grid">
+                <div class="io-box">
+                  <div class="io-box-label input-label">📥 INPUT (Prompt yêu cầu phân tích kinh doanh)</div>
+                  <pre class="code-block" id="ioStep5Input">// Yêu cầu phân tích...</pre>
+                </div>
+                <div class="io-box">
+                  <div class="io-box-label output-label">📤 OUTPUT (Lời nói tự nhiên sinh ra)</div>
+                  <pre class="code-block" id="ioStep5Output">// Đoạn nhận xét tiếng Việt...</pre>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-backdrop" id="settingsModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Cấu hình AI Agent</h3>
+          <button class="close-modal-btn" id="closeSettingsBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">
+            Hệ thống hiện dùng <strong>Built-in Semantic Parser</strong> thông minh (hoạt động offline tức thì không cần key). Nếu muốn AI phân tích qua Gemini API thật, bạn có thể nhập API Key vào đây:
+          </p>
+          <div class="form-group">
+            <label for="geminiKeyInput">Google Gemini API Key (Tùy chọn):</label>
+            <input type="password" id="geminiKeyInput" class="text-input" placeholder="AIzaSy...">
+          </div>
+          <div class="form-group">
+            <label for="cubeHostInput">Cube.dev Server URL:</label>
+            <input type="text" id="cubeHostInput" class="text-input" value="http://localhost:4000">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-primary" id="saveSettingsBtn">Lưu cấu hình</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

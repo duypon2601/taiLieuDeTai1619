@@ -61,3 +61,7 @@ cloneFromGitHub/
 
 # Logs
 *.log
+
+# Nested repos (have their own remotes)
+P-117/
+workSpaceThongTinDeTai/cloneWrenAI/

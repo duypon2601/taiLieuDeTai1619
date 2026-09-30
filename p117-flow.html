@@ -1,0 +1,203 @@
+<title>P-117 System Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 4 lanes left→right (FE → BE → AI → Data), stacked on phones; below, the 9-step journey of one question, then status per layer. */
+:root{
+  --bg:#f5f7f6; --surface:#ffffff; --ink:#15231f; --muted:#5b6b66; --line:#d6dfdb;
+  --accent:#0f6b5c; --accent-soft:#e1efeb;
+  --ok:#1f7a3f; --ok-bg:#e3f3e8; --mock:#9a5b00; --mock-bg:#fbefd9; --todo:#8a2f2f; --todo-bg:#f6e3e3;
+  --display:"Be Vietnam Pro",system-ui,sans-serif; --body:"Be Vietnam Pro",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --surface:#16211e; --ink:#e4ece9; --muted:#9aaba5; --line:#2a3834;
+  --accent:#5cc2ad; --accent-soft:#1c3530;
+  --ok:#6fd392; --ok-bg:#16301f; --mock:#f0b45a; --mock-bg:#35280f; --todo:#f08c8c; --todo-bg:#3a1b1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --surface:#16211e; --ink:#e4ece9; --muted:#9aaba5; --line:#2a3834;
+  --accent:#5cc2ad; --accent-soft:#1c3530;
+  --ok:#6fd392; --ok-bg:#16301f; --mock:#f0b45a; --mock-bg:#35280f; --todo:#f08c8c; --todo-bg:#3a1b1b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:grid;gap:36px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:20px;font-weight:700}
+h3{font-size:15px;font-weight:600}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lead{color:var(--muted);max-width:68ch;margin:8px 0 0}
+header{display:grid;gap:14px}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--body);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.ok{color:var(--ok);background:var(--ok-bg)} .mock{color:var(--mock);background:var(--mock-bg)} .todo{color:var(--todo);background:var(--todo-bg)}
+code{font:13px var(--mono);background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+
+/* Lanes */
+.lanes{display:grid;grid-template-columns:1fr 28px 1fr 28px 1.15fr 28px 1fr;align-items:stretch}
+.lane{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.lane-head{display:grid;gap:3px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.lane-head small{font:12px var(--mono);color:var(--muted)}
+.item{display:grid;gap:4px}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.item-name{font-weight:600;font-size:14px}
+.item p{margin:0;color:var(--muted);font-size:13px}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.arrow svg{width:22px;height:22px}
+.arrow .v{display:none}
+@media (max-width:900px){
+  .lanes{grid-template-columns:1fr}
+  .arrow{height:30px}
+  .arrow .h{display:none} .arrow .v{display:block}
+}
+
+/* Journey */
+.journey{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;counter-reset:step}
+.journey li{counter-increment:step;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:6px;min-width:0}
+.journey li .n{font:600 12px var(--mono);color:var(--accent)}
+.journey li .n::before{content:counter(step,decimal-leading-zero) " · "}
+.journey li p{margin:0;font-size:13.5px}
+.journey li .where{font:12px var(--mono);color:var(--muted)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{border-top:2px solid var(--accent);padding-top:10px}
+.stat b{display:block;font:700 26px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+
+/* Status by layer */
+.layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.layer{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.layer ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:13.5px}
+.layer .group{display:grid;gap:6px}
+
+.pitch{background:var(--accent-soft);border-radius:10px;padding:18px 20px;display:grid;gap:10px}
+.pitch blockquote{margin:0;font-size:16px;line-height:1.6;max-width:75ch}
+.next{margin:0;padding-left:20px;display:grid;gap:4px}
+section{display:grid;gap:14px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">P-117 · DATA-16 · trạng thái 30/09/2026</div>
+    <h1>Từ câu hỏi tiếng Việt đến dashboard đã duyệt</h1>
+    <p class="lead">Luồng đi qua 4 tầng: Frontend → Backend → AI Agent → Data. Mỗi thành phần được gắn trạng thái đúng như code đang chạy hôm nay.</p>
+    <div class="legend">
+      <span class="chip ok">Thật: chạy thật</span>
+      <span class="chip mock">Mock: chạy bằng fixture 8 kịch bản</span>
+      <span class="chip todo">Chưa có</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="flow">
+    <h2 id="flow">Kiến trúc và luồng dữ liệu</h2>
+    <div class="lanes">
+      <div class="lane">
+        <div class="lane-head"><div class="eyebrow">1 · Frontend</div><h3>Next.js + ECharts</h3><small>frontend/</small></div>
+        <div class="item"><div class="item-top"><span class="item-name">Đăng nhập</span><span class="chip ok">Thật</span></div><p>5 tài khoản demo, token giữ trong bộ nhớ</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Studio chat</span><span class="chip ok">Thật</span></div><p>Gõ câu hỏi, xem tiến độ từng bước (SSE)</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Canvas dashboard</span><span class="chip ok">Thật</span></div><p>9 loại biểu đồ, nhận xét, giải thích</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Duyệt và thư viện</span><span class="chip ok">Thật</span></div><p>Duyệt/từ chối, Viewer chỉ xem bản đã xuất bản</p></div>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg class="h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h15M13 6l6 6-6 6"/></svg><svg class="v" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+
+      <div class="lane">
+        <div class="lane-head"><div class="eyebrow">2 · Backend</div><h3>FastAPI + Postgres</h3><small>src/api, src/db</small></div>
+        <div class="item"><div class="item-top"><span class="item-name">JWT + phân quyền</span><span class="chip ok">Thật</span></div><p>Role, vùng, dự án nằm trong token; Viewer bị 403</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">/chat/stream (SSE)</span><span class="chip ok">Thật</span></div><p>Chạy agent, stream sự kiện, giới hạn tần suất</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">/review, /dashboards, widget data</span><span class="chip ok">Thật</span></div><p>Lưu bản nháp, version, xuất bản</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Audit log</span><span class="chip ok">Thật</span></div><p>Ghi mọi hành động, chỉ lưu hash</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Export</span><span class="chip todo">Chưa có</span></div><p>Trả 501</p></div>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg class="h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h15M13 6l6 6-6 6"/></svg><svg class="v" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+
+      <div class="lane">
+        <div class="lane-head"><div class="eyebrow">3 · AI Agent</div><h3>LangGraph, 17 node</h3><small>src/agent</small></div>
+        <div class="item"><div class="item-top"><span class="item-name">Guardrail chống injection</span><span class="chip ok">Thật</span></div><p>Chặn bằng luật, không cần LLM</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Hiểu câu hỏi (LLM)</span><span class="chip mock">Mock</span></div><p>Phân loại ý định, lấy dự án, chỉ số, thời gian</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Kiểm tra quyền</span><span class="chip ok">Thật</span></div><p>Chặn dự án ngoài vùng của người hỏi</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Sinh truy vấn (LLM) + tự sửa</span><span class="chip mock">Mock</span></div><p>Dry-run kiểm tra, sai thì sửa lại tối đa 3 lần (vòng lặp là thật)</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Chọn biểu đồ R1–R10</span><span class="chip ok">Thật</span></div><p>Luật thuần, không LLM, có lý do cho từng biểu đồ</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Tính số liệu</span><span class="chip todo">Chưa có</span></div><p>Đang copy từ fixture</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Viết và kiểm nhận xét</span><span class="chip mock">Mock</span></div><p>“Số do code, chữ do LLM”: thay placeholder là thật</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Dừng chờ duyệt (HITL)</span><span class="chip ok">Thật</span></div><p><code>interrupt()</code> + checkpoint Postgres</p></div>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg class="h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h15M13 6l6 6-6 6"/></svg><svg class="v" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+
+      <div class="lane">
+        <div class="lane-head"><div class="eyebrow">4 · Data</div><h3>Cube.dev semantic layer</h3><small>cube/, scripts/</small></div>
+        <div class="item"><div class="item-top"><span class="item-name">6 cube</span><span class="chip ok">Thật</span></div><p>Dự án, phân khu, căn, đại lý, hợp đồng, cọc</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Lọc theo vùng + bắt buộc thời gian</span><span class="chip ok">Thật</span></div><p><code>queryRewrite</code>, 8/8 test</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Sinh dữ liệu giả</span><span class="chip ok">Thật</span></div><p>5 dự án, 2.000 căn, 1.932 cọc, 1.368 HĐ</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Backend đọc dữ liệu</span><span class="chip mock">Mock</span></div><p>Qua Cube giả; client gọi Cube thật đã có code</p></div>
+        <div class="item"><div class="item-top"><span class="item-name">Nạp dữ liệu vào kho, BigQuery</span><span class="chip todo">Chưa có</span></div><p>Chưa có script load CSV</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="journey">
+    <h2 id="journey">Một câu hỏi đi qua hệ thống</h2>
+    <p class="lead" style="margin:0">Ví dụ demo S1: “So sánh doanh số các phân khu Ocean Park 2 quý 3/2026”, đăng nhập bằng Builder Miền Bắc.</p>
+    <ol class="journey">
+      <li><span class="n">Frontend</span><p>Builder đăng nhập, nhận JWT mang vai trò và vùng Miền Bắc.</p><span class="where">POST /auth/login</span></li>
+      <li><span class="n">Frontend → Backend</span><p>Gõ câu hỏi ở Studio. Backend kiểm token, ghi audit rồi mở luồng SSE.</p><span class="where">POST /chat/stream</span></li>
+      <li><span class="n">AI</span><p>Guardrail cho qua. LLM hiểu: Ocean Park 2, doanh số, theo phân khu, Q3/2026.</p><span class="where">guard_input → route_intent → extract_entities</span></li>
+      <li><span class="n">AI</span><p>Kiểm quyền: Ocean Park 2 thuộc Miền Bắc, hợp lệ. Hỏi Miền Nam thì bị từ chối.</p><span class="where">check_access</span></li>
+      <li><span class="n">AI → Data</span><p>LLM sinh 4 truy vấn Cube. Cube dry-run để kiểm tra, sau đó lấy dữ liệu và tự lọc theo vùng.</p><span class="where">build_cube_queries → validate → load_data</span></li>
+      <li><span class="n">AI</span><p>Luật R1–R10 chọn KPI, cột theo tháng, donut tỷ trọng phân khu, thanh ngang top sàn.</p><span class="where">advise_charts</span></li>
+      <li><span class="n">AI</span><p>Code tính con số, LLM viết nhận xét bằng placeholder, code điền số thật vào.</p><span class="where">compute_facts → write → verify</span></li>
+      <li><span class="n">Backend → Frontend</span><p>Graph dừng chờ duyệt. Bản nháp v1 lưu vào Postgres, UI hiện dashboard.</p><span class="where">hitl_review · draft_ready</span></li>
+      <li><span class="n">Frontend → Backend</span><p>Builder bấm Duyệt: xuất bản, ghi audit, Viewer Miền Bắc thấy trong thư viện. Muốn sửa thì chat tiếp, tạo ra v2.</p><span class="where">POST /dashboards/{id}/review</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="numbers">
+    <h2 id="numbers">Con số hiện có</h2>
+    <div class="stats">
+      <div class="stat"><b>442</b><span>test backend pass (pytest)</span></div>
+      <div class="stat"><b>67</b><span>test frontend pass (vitest)</span></div>
+      <div class="stat"><b>8</b><span>test luật bảo mật Cube</span></div>
+      <div class="stat"><b>17</b><span>node trong graph LangGraph</span></div>
+      <div class="stat"><b>6</b><span>cube trong semantic layer</span></div>
+      <div class="stat"><b>8</b><span>kịch bản demo chạy trọn từ đầu đến cuối</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="layers">
+    <h2 id="layers">Đã làm được, theo tầng</h2>
+    <div class="layers">
+      <div class="layer">
+        <h3>Frontend</h3>
+        <div class="group"><span class="chip ok">Đã làm</span><ul><li>Login, Studio chat có stepper tiến độ</li><li>Canvas 9 loại biểu đồ, nhận xét, bảng giải thích</li><li>Duyệt/từ chối, thư viện, chặn trang theo role</li><li>Chạy được cả chế độ MSW lẫn backend thật</li></ul></div>
+      </div>
+      <div class="layer">
+        <h3>Backend</h3>
+        <div class="group"><span class="chip ok">Đã làm</span><ul><li>JWT HS256, phân quyền theo role và vùng</li><li>SSE chat, review, thư viện, dữ liệu widget</li><li>Postgres: dashboard, version, audit, checkpoint</li><li>Giới hạn tần suất, xử lý lỗi thống nhất</li></ul></div>
+        <div class="group"><span class="chip todo">Còn thiếu</span><ul><li>User/role trong DB, export, secret production</li></ul></div>
+      </div>
+      <div class="layer">
+        <h3>AI Agent</h3>
+        <div class="group"><span class="chip ok">Đã làm</span><ul><li>Graph 17 node, routing, retry, HITL thật</li><li>Guardrail, kiểm quyền, vòng tự sửa truy vấn</li><li>Chart Advisor R1–R10 và layout lưới</li><li>Eval runner 8 case</li></ul></div>
+        <div class="group"><span class="chip mock">Đang mock</span><ul><li>5 bước gọi LLM: chưa có prompt, chưa chạy Gemini thật</li></ul></div>
+        <div class="group"><span class="chip todo">Còn thiếu</span><ul><li>Tính số liệu thật, kiểm số bịa và từ nhân quả</li></ul></div>
+      </div>
+      <div class="layer">
+        <h3>Data</h3>
+        <div class="group"><span class="chip ok">Đã làm</span><ul><li>6 cube, bộ chỉ số có định nghĩa khoá cứng</li><li>Lọc theo vùng, bắt buộc khoảng thời gian</li><li>Generator dữ liệu giả có kiểm tra toàn vẹn</li></ul></div>
+        <div class="group"><span class="chip todo">Còn thiếu</span><ul><li>Nạp CSV vào kho, bật Cube thật, BigQuery</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pitch" aria-labelledby="say">
+    <h2 id="say">Nói với mentor</h2>
+    <blockquote>Khung hệ thống đã chạy thật từ đầu đến cuối: đăng nhập, chat, agent 17 bước, duyệt, thư viện; có phân quyền theo vùng, audit và checkpoint. Phần “thông minh” (LLM hiểu câu hỏi, sinh truy vấn, viết nhận xét) và dữ liệu thật qua Cube đang chạy bằng 8 kịch bản mẫu. Đó là trọng tâm của chặng tiếp theo.</blockquote>
+    <h3>Chặng tiếp theo</h3>
+    <ol class="next">
+      <li>Nạp dữ liệu giả vào Postgres, bật Cube thật</li>
+      <li>Viết prompt, bật Gemini thật cho 5 node LLM</li>
+      <li>Tính số liệu thật và kiểm chặt nhận xét</li>
+      <li>Mở rộng eval ra ngoài 8 kịch bản</li>
+    </ol>
+  </section>
+</div>

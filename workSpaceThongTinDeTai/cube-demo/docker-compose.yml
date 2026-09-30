@@ -1,0 +1,31 @@
+
+services:
+  # Database mẫu PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: cube_user
+      POSTGRES_PASSWORD: cube_password
+      POSTGRES_DB: demo_db
+    ports:
+      - "5432:5432"
+
+  # Cube Server
+  cube:
+    image: cubejs/cube:latest
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - CUBEJS_DB_TYPE=postgres
+      - CUBEJS_DB_HOST=postgres
+      - CUBEJS_DB_NAME=demo_db
+      - CUBEJS_DB_USER=cube_user
+      - CUBEJS_DB_PASS=cube_password
+      - CUBEJS_DEV_MODE=true
+    volumes:
+      - ./model:/cube/conf/model
+      - ./schema:/cube/conf/schema
+    depends_on:
+      - postgres
